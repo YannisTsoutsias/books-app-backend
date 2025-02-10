@@ -24,15 +24,25 @@ public class SecurityConfig {
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth
+                        // Allow Swagger UI and API docs to be accessed publicly
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs"
+                        ).permitAll()
+
+                        // Permit access to authentication and book APIs
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/books/**").permitAll()
+
+                        // Secure all other endpoints
                         .anyRequest().authenticated()
                 )
                 .formLogin().disable()
