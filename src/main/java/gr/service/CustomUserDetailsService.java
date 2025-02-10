@@ -25,14 +25,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println("🎯 Role from DB: " + user.getRole());
 
         String role = user.getRole();
-        if (role.startsWith("ROLE_")) {
-            role = role.substring(5);
-        }
+
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(role)
+                .authorities(role)
                 .build();
     }
 }
